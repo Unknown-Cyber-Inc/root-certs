@@ -1,29 +1,32 @@
-name: Build Certificate Bundles
+name: Build and Release Certificate Bundles
 
 on:
   push:
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
-  build-bundles:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get the version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
       - name: Rebuild company full_bundle.pem files
         run: |
           for dir in */; do
             [ "$dir" = "base/" ] && continue
-
             if [ -d "$dir/singles" ] || [ -d "$dir/bundles" ]; then
               echo "Rebuilding $dir/full_bundle.pem"
               cat /dev/null > "$dir/full_bundle.pem"
-
               if [ -d "$dir/singles" ]; then
                 cat "$dir"/singles/* >> "$dir/full_bundle.pem" 2>/dev/null || true
               fi
-
               if [ -d "$dir/bundles" ]; then
                 cat "$dir"/bundles/* >> "$dir/full_bundle.pem" 2>/dev/null || true
               fi
@@ -42,5 +45,15 @@ jobs:
 
       - name: Show summary
         run: |
-          echo "Root bundle:"
+          echo "Root bundle lines:"
           wc -l cert_bundle.pem
+
+      - name: Create GitHub Release (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: cert_bundle.pem
+          name: "Certificate Bundles for ${{ steps.get_version.outputs.VERSION }}"
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
