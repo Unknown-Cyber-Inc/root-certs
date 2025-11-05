@@ -1,2 +1,46 @@
-name: Re-build certificate bundle
+name: Build Certificate Bundles
 
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-bundles:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild company full_bundle.pem files
+        run: |
+          for dir in */; do
+            [ "$dir" = "base/" ] && continue
+
+            if [ -d "$dir/singles" ] || [ -d "$dir/bundles" ]; then
+              echo "Rebuilding $dir/full_bundle.pem"
+              cat /dev/null > "$dir/full_bundle.pem"
+
+              if [ -d "$dir/singles" ]; then
+                cat "$dir"/singles/* >> "$dir/full_bundle.pem" 2>/dev/null || true
+              fi
+
+              if [ -d "$dir/bundles" ]; then
+                cat "$dir"/bundles/* >> "$dir/full_bundle.pem" 2>/dev/null || true
+              fi
+            fi
+          done
+
+      - name: Rebuild root cert_bundle.pem
+        run: |
+          echo "Rebuilding cert_bundle.pem"
+          cat /dev/null > cert_bundle.pem
+          for dir in */; do
+            if [ -f "$dir/full_bundle.pem" ]; then
+              cat "$dir/full_bundle.pem" >> cert_bundle.pem
+            fi
+          done
+
+      - name: Show summary
+        run: |
+          echo "Root bundle:"
+          wc -l cert_bundle.pem
