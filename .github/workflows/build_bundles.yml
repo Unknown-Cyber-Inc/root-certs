@@ -55,3 +55,4 @@ jobs:
           files: cert_bundle.pem
           name: "Certificate Bundles for ${{ steps.get_version.outputs.VERSION }}"
           tag_name: ${{ steps.get_version.outputs.VERSION }}
+          create_only: true
