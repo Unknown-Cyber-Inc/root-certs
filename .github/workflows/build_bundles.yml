@@ -173,6 +173,8 @@ jobs:
         if: github.event.inputs.tag == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          files: cert_bundle.pem
+          files: |
+            cert_bundle.pem
+            example_bundle.pem
           name: "Certificate Bundles for ${{github.event.inputs.version}}"
           tag_name: ${{github.event.inputs.version}}
