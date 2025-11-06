@@ -51,7 +51,7 @@ jobs:
               if [ -d "$dir/bundles" ]; then
                 cat "$dir"/bundles/* >> "$dir/full_bundle.pem" 2>/dev/null || true
               fi
-              ../.github/format_bundle.sh "$dir/full_bundle.pem" "$dir/full_bundle.pem.fixed"
+              .github/format_bundle.sh "$dir/full_bundle.pem" "$dir/full_bundle.pem.fixed"
               mv "$dir/full_bundle.pem.fixed" "$dir/full_bundle.pem"
             fi
           done
