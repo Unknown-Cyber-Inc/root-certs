@@ -155,19 +155,19 @@ jobs:
           echo "Root bundle lines:"
           wc -l cert_bundle.pem
 
-      - name: Commit formatted bundles
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      # - name: Commit formatted bundles
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add **/full_bundle.pem cert_bundle.pem || true
+      #     git add **/full_bundle.pem cert_bundle.pem || true
 
-          if ! git diff --cached --quiet; then
-            git commit -m "Format PEM bundles via workflow"
-            git push origin HEAD
-          else
-            echo "No changes to commit"
-          fi
+      #     if ! git diff --cached --quiet; then
+      #       git commit -m "Format PEM bundles via workflow"
+      #       git push origin HEAD
+      #     else
+      #       echo "No changes to commit"
+      #     fi
 
       - name: Create GitHub Release (tags only)
         if: github.event.inputs.tag == 'true'
