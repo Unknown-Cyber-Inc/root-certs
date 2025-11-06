@@ -100,7 +100,7 @@ jobs:
             fi
           done
 
-      - name: Rebuild root cert_bundle.pem
+      - name: Rebuild root example_bundle.pem
         run: |
           # Use same fix_pem function as above
           fix_pem() {
@@ -139,28 +139,28 @@ jobs:
             rm -f "$TEMP_CRL"
           }
 
-          echo "Rebuilding cert_bundle.pem"
-          cat /dev/null > cert_bundle.pem
+          echo "Rebuilding example_bundle.pem"
+          cat /dev/null > example_bundle.pem
           for dir in */; do
             if [ -f "$dir/full_bundle.pem" ]; then
-              cat "$dir/full_bundle.pem" >> cert_bundle.pem
+              cat "$dir/full_bundle.pem" >> example_bundle.pem
             fi
           done
 
-          fix_pem "cert_bundle.pem" "cert_bundle.pem.fixed"
-          mv "cert_bundle.pem.fixed" "cert_bundle.pem"
+          fix_pem "example_bundle.pem" "example_bundle.pem.fixed"
+          mv "example_bundle.pem.fixed" "example_bundle.pem"
 
       - name: Show summary
         run: |
           echo "Root bundle lines:"
-          wc -l cert_bundle.pem
+          wc -l example_bundle.pem
 
       # - name: Commit formatted bundles
       #   run: |
       #     git config user.name "github-actions[bot]"
       #     git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      #     git add **/full_bundle.pem cert_bundle.pem || true
+      #     git add **/full_bundle.pem example_bundle.pem || true
 
       #     if ! git diff --cached --quiet; then
       #       git commit -m "Format PEM bundles via workflow"
